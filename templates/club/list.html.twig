@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des formations</h1>
+    {% if formations is defined and formations|length %}
+      <p>Nombre de formations : {{ formations|length }}</p>
+
+      <table border="1">
+    <tr>
+      <th>Référence</th>
+      <th>Titre</th>
+      <th>Description</th>
+      <th>Date de début</th>
+      <th>Date de fin</th>
+      <th>Nombre de participants</th>
+    </tr>
+    {% for f in formations %}
+      <tr>
+        <td>{{ f.ref }}</td>
+        <td>{{ f.Titre|upper }}</td>
+        <td>{{ f.Description }}</td>
+        <td>{{ f.date_debut }}</td>
+        <td>{{ f.date_fin }}</td>
+        <td>{{ f.nb_participants }} {% if f.nb_participants == 0 %}
+          <form action="{{ path('detail_formation', {'nom_f': f.Titre|upper}) }}" method="get">
+            <button type="submit">Participer</button>
+          </form>
+        {% endif %}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Formations théoriques</h2>
+  {% set maxPcp = 0 %}
+  {% set maxForm = 0 %}
+  {% set totalPcp = 0 %}
+  <ul>
+  {% for f in formations %} 
+      {% if f.Description == 'formation theorique' %}
+          <li>{{ f.Titre|upper }}</li>
+      {% endif %}
+      {% if f.nb_participants > maxPcp %}
+          {% set maxPcp = f.nb_participants %}
+          {% set maxForm = f %}
+      {% endif %}
+      {% set totalPcp = totalPcp + f.nb_participants %}
+  {% endfor %}
+  </ul>
+
+  <h2>Formation ayant le plus grand nombre de participants</h2>
+  <p>La formation "{{ maxForm.Titre|upper }}" a eu le plus grand nombre de participants avec {{ maxPcp }} personnes.</p>
+
+  <h2>Le nombre total des participants aux formations</h2>
+  <p>Le nombre total de participants est : {{ totalPcp }}</p>
+{% else %}
+    <p>Il n'y a aucune formation à afficher</p>
+{% endif %}
+
+{% endblock %}
